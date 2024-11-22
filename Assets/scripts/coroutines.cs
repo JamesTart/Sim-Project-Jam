@@ -1,8 +1,7 @@
 using System.Collections;
-
 using UnityEngine;
 
-public class coroutines : MonoBehaviour
+public class Coroutines : MonoBehaviour
 {
 
     // IEnumerator: 
@@ -31,7 +30,7 @@ public class coroutines : MonoBehaviour
         Debug.Log("Time is up!");
     }
 
-    IEnumerator RepeatExecution(float intervalSeconds = 1f)
+    IEnumerator RepeatingExecution(float intervalSeconds = 1f)
     {
         while (true)
         {
@@ -51,7 +50,7 @@ public class coroutines : MonoBehaviour
             Debug.Log($"Executing with an interval of {intervalSeconds} seconds");
 
             timeElapsed += intervalSeconds;
-            yield return new WaitForSeconds(intervalsSeconds);
+            yield return new WaitForSeconds(intervalSeconds);
 
         }
 
@@ -60,13 +59,13 @@ public class coroutines : MonoBehaviour
     // döp den till en relevant funkion
     bool Somecondition()
     {
-        bool result = Input.GetKeydown(Keycode.space);
+        bool result = Input.GetKeyDown(KeyCode.Space);
 
         return result;
 
     }
 
-    IEnumerator ConditonalExecution()
+    IEnumerator ConditionalExecution()
     {
         Debug.Log("Time to work!");
 
