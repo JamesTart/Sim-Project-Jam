@@ -1,14 +1,13 @@
 using UnityEngine;
 
-public class GrabObject : MonoBehaviour
+public class ColliderGrab : MonoBehaviour
 {
-
     public new Camera camera;
     public Transform grabTransform;
     public float grabDistance = 3.0f;
+    public float minimumGrabDistance = 1.0f; // Minimum distance for grabbing an object
 
     private Rigidbody grabbedRigidbody = null;
-
 
     void Update()
     {
@@ -24,11 +23,18 @@ public class GrabObject : MonoBehaviour
         RaycastHit hitInfo;
         Ray ray = new Ray(camera.transform.position, camera.transform.forward);
 
-        if (!Physics.Raycast(ray, out hitInfo, 3f))
+        if (!Physics.Raycast(ray, out hitInfo, grabDistance))
             return;
 
         if (!hitInfo.transform.CompareTag("Grabbable"))
             return;
+
+        // Calculate the distance from the camera to the hit object
+        float distanceToObject = Vector3.Distance(camera.transform.position, hitInfo.transform.position);
+
+        // Only grab the object if the distance is greater than the minimum required
+        if (distanceToObject < minimumGrabDistance)
+            return;  // Prevent grabbing if the object is too close
 
         grabbedRigidbody = hitInfo.collider.attachedRigidbody;
 
