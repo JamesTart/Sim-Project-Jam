@@ -2,19 +2,16 @@ using UnityEngine;
 
 public class DeleteOnContact : MonoBehaviour
 {
+    // The tag to filter which objects can be destroyed
+    public string targetTag = "Destructible";
+
     // This method is called when the object collides with another collider
     private void OnCollisionEnter(Collision collision)
     {
-        // Check if the object the current object is colliding with has a Rigidbody and Collider
-        if (collision.gameObject != null)
-
-        if (collision.gameObject.CompareTag("Destructible"))
+        // Check if the collided object has the specified tag
+        if (collision.gameObject.CompareTag(targetTag))
         {
-                Destroy(collision.gameObject);
-        }
-
-        {
-            // Destroy the object that was collided with
+            // Destroy the object with the matching tag
             Destroy(collision.gameObject);
         }
     }
