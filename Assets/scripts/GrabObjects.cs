@@ -7,6 +7,8 @@ public class GrabObject : MonoBehaviour
     public Transform grabTransform;
     public float grabDistance = 3.0f;
 
+    public PlaceObject placeObjectComponent;
+
     private Rigidbody grabbedRigidbody = null;
 
 
@@ -44,6 +46,11 @@ public class GrabObject : MonoBehaviour
         grabbedRigidbody.GetComponent<Collider>().enabled = true;
         grabbedRigidbody.isKinematic = false;
         grabbedRigidbody.transform.parent = null;
+        
+
+        if (placeObjectComponent != null)
+            placeObjectComponent.Place(grabbedRigidbody, 3f);
+
         grabbedRigidbody = null;
     }
 }
