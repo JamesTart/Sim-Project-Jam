@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ColliderGrab : MonoBehaviour
+public class BetterGrab : MonoBehaviour
 {
     public new Camera camera;
     public Transform grabTransform;

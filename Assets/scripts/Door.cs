@@ -10,7 +10,7 @@ public class DoorFixed : MonoBehaviour
     float startAngle;
     float currentOffset;
     float closedOffset = 0f;
-    float openOffset = 90f;
+    public float openOffset = -90f;
 
 
     void Start()
