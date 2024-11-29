@@ -5,8 +5,9 @@ public class GrabObject : MonoBehaviour
 
     public new Camera camera;
     public Transform grabTransform;
+    public float grabDistance = 3.0f;
 
-    public PlaceObject placeOjectComponent;
+    public PlaceObject placeObjectComponent;
 
     private Rigidbody grabbedRigidbody = null;
 
@@ -25,7 +26,7 @@ public class GrabObject : MonoBehaviour
         RaycastHit hitInfo;
         Ray ray = new Ray(camera.transform.position, camera.transform.forward);
 
-        if (!Physics.Raycast(ray, out hitInfo, 6f))
+        if (!Physics.Raycast(ray, out hitInfo, 3f))
             return;
 
         if (!hitInfo.transform.CompareTag("Grabbable"))
@@ -37,7 +38,7 @@ public class GrabObject : MonoBehaviour
         grabbedRigidbody.position = grabTransform.position;
         grabbedRigidbody.transform.parent = camera.transform;
         grabbedRigidbody.transform.localRotation = grabTransform.localRotation;
-        grabbedRigidbody.GetComponent<Collider>().enabled = false;
+        grabbedRigidbody.GetComponent<Collider>().enabled = true;
     }
 
     void Release()
@@ -45,9 +46,10 @@ public class GrabObject : MonoBehaviour
         grabbedRigidbody.GetComponent<Collider>().enabled = true;
         grabbedRigidbody.isKinematic = false;
         grabbedRigidbody.transform.parent = null;
+        
 
-        if (placeOjectComponent != null)
-            placeOjectComponent.Place(grabbedRigidbody, 3f);
+        if (placeObjectComponent != null)
+            placeObjectComponent.Place(grabbedRigidbody, 3f);
 
         grabbedRigidbody = null;
     }
