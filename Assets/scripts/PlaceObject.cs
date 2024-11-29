@@ -2,32 +2,42 @@ using UnityEngine;
 
 public class PlaceObject : MonoBehaviour
 {
-    public void Place(Rigidbody grabbedRigidBody, float maxDistance)
+    [Header("Snapping Settings")]
+    public float maxSnapDistance = 2.0f; // Default snapping distance, editable in the Inspector
+
+    public void Place(Rigidbody grabbedRigidbody)
     {
-        GameObject[] snappingPoints = GameObject.FindGameObjectsWithTag("snappingPoint");
+        Place(grabbedRigidbody, maxSnapDistance); // Call the overloaded method
+    }
 
+    public void Place(Rigidbody grabbedRigidbody, float maxDistance)
+    {
+        // Find all snapping points in the scene
+        GameObject[] snappingPoints = GameObject.FindGameObjectsWithTag("SnappingPoint");
 
-        // Gets the closest snapping point
+        // Get the closest snapping point
         GameObject closestSnappingPoint = null;
         float closestSnappingDistance = Mathf.Infinity;
 
         foreach (GameObject snap in snappingPoints)
         {
-            float snappDistance = Vector3.Distance(grabbedRigidBody.position, snap.transform.position);
+            float snapDistance = Vector3.Distance(grabbedRigidbody.position, snap.transform.position);
 
-            if (snappDistance < closestSnappingDistance)
+            if (snapDistance < closestSnappingDistance)
             {
                 closestSnappingPoint = snap;
-                closestSnappingDistance = snappDistance;
+                closestSnappingDistance = snapDistance;
             }
         }
 
-        if (closestSnappingDistance > maxDistance) // cant reach any snapping point
+        // Check if the closest snapping point is within the provided maxDistance
+        if (closestSnappingDistance > maxDistance)
             return;
 
-        grabbedRigidBody.isKinematic = true;
-        grabbedRigidBody.transform.parent = closestSnappingPoint.transform;
-        grabbedRigidBody.transform.localEulerAngles = Vector3.zero;
-        grabbedRigidBody.transform.localPosition = Vector3.zero;
+        // Snap the object to the closest snapping point
+        grabbedRigidbody.isKinematic = true;
+        grabbedRigidbody.transform.parent = closestSnappingPoint.transform;
+        grabbedRigidbody.transform.localEulerAngles = Vector3.zero;
+        grabbedRigidbody.transform.localPosition = Vector3.zero;
     }
 }
