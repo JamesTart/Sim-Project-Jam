@@ -1,15 +1,22 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
 
 public class TaskDisplayInScene : MonoBehaviour
 {
-    [Header("UI References")]
-    public GameObject taskPrefab; // Prefab with Toggle + Text
-    public Transform taskListParent; // Parent for task items
+    public GameObject taskPrefab;    // Prefab for task UI
+    public Transform taskListParent; // Parent object for the task UI list
 
     private List<TaskItem> tasks = new List<TaskItem>();
-    private const string TaskSaveKey = "TaskManager_Tasks"; // Key to store tasks persistently
+    private const string TaskSaveKey = "TaskManager_Tasks";
+
+    [System.Serializable]
+    public class TaskItem
+    {
+        public string Description;
+        public bool IsCompleted;
+        public GameObject ObjectToTrack;
+    }
 
     void Start()
     {
@@ -17,17 +24,26 @@ public class TaskDisplayInScene : MonoBehaviour
         CreateTaskUI();
     }
 
+    void Update()
+    {
+        // Check if any tasks should be marked as completed
+        foreach (var task in tasks)
+        {
+            if (!task.IsCompleted && task.ObjectToTrack == null) // Object is deleted
+            {
+                task.IsCompleted = true;
+                UpdateTaskUI(task);
+                SaveTasks();
+            }
+        }
+    }
+
     private void LoadTasks()
     {
-        // Load tasks from PlayerPrefs or EditorPrefs (if shared with Editor scripts)
         if (PlayerPrefs.HasKey(TaskSaveKey))
         {
             string json = PlayerPrefs.GetString(TaskSaveKey);
-            TaskData taskData = JsonUtility.FromJson<TaskData>(json);
-            if (taskData != null && taskData.Tasks != null)
-            {
-                tasks = taskData.Tasks;
-            }
+            tasks = JsonUtility.FromJson<TaskData>(json).Tasks;
         }
     }
 
@@ -44,7 +60,6 @@ public class TaskDisplayInScene : MonoBehaviour
                 taskText.text = task.Description;
                 toggle.isOn = task.IsCompleted;
 
-                // Update the task's completion status when toggled
                 toggle.onValueChanged.AddListener((isCompleted) =>
                 {
                     task.IsCompleted = isCompleted;
@@ -54,23 +69,30 @@ public class TaskDisplayInScene : MonoBehaviour
         }
     }
 
+    private void UpdateTaskUI(TaskItem task)
+    {
+        foreach (Transform child in taskListParent)
+        {
+            Toggle toggle = child.GetComponentInChildren<Toggle>();
+            Text taskText = child.GetComponentInChildren<Text>();
+
+            if (taskText.text == task.Description && toggle != null)
+            {
+                toggle.isOn = task.IsCompleted;
+                break;
+            }
+        }
+    }
+
     private void SaveTasks()
     {
         TaskData taskData = new TaskData { Tasks = tasks };
-        string json = JsonUtility.ToJson(taskData);
-        PlayerPrefs.SetString(TaskSaveKey, json);
-    }
-
-    [System.Serializable]
-    public class TaskItem
-    {
-        public string Description;
-        public bool IsCompleted;
+        PlayerPrefs.SetString(TaskSaveKey, JsonUtility.ToJson(taskData));
     }
 
     [System.Serializable]
     public class TaskData
     {
-        public List<TaskItem> Tasks = new List<TaskItem>();
+        public List<TaskItem> Tasks;
     }
 }
